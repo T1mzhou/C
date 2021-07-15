@@ -1,4 +1,4 @@
-# C语言解决free invalid pointer 导致的core dumped问题
+# C语言解决free invalid pointer 导致的core dumped问题引发的思考
 
 ## 背景
 
