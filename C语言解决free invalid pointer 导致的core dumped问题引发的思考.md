@@ -69,7 +69,7 @@ int main() {
 
 ## 为什么需要这样处理？
 
-### Glibc-2.2.3源码
+### glibc-2.2.3源码
 
 ```c
 /* Declaration changed to standard one for GNU.  */
@@ -218,5 +218,35 @@ typedef struct free_list {
 
 ## 扩展话题
 
-* C++中new一个数组，使用delete释放会怎么样？
+### C++中new一个数组，使用delete释放会怎么样？
+
+* ### 以VC为例子
+
+  #### ![image-20210720230835376](C语言解决free invalid pointer 导致的core dumped问题引发的思考.assets/image-20210720230835376.png)
+
+  #### 图示说明：
+
+  * 第一个内存分布图，是`VC debug`模式下，申请3个`String`对象数组后动态分配的内存情况；
+
+  * 第二个内存分布图，是`VC release`版本下，申请3个`String`对象数组后动态分配的内存情况；
+
+  **图一解释：**41h为动态内存申请后vc标记动态申请内存的大小，41h为64的16进制数据+1，1为标识内存被使用。橘黄色的部分为`Debug`需要的信息，`Debugger header`为`debug`的头部信息。3为申请的数组大小。`pad`为填充数据，最后大小为64是因为内存对齐。
+
+  **图二解释：**21h为动态内存申请后vc标记动态申请内存的大小，21h为32的16进制数据+1，1为标识内存被使用。3为申请的数组大小。最后大小为32是因为内存对齐。
+
+  *****
+
+  ![image-20210720231948609](C语言解决free invalid pointer 导致的core dumped问题引发的思考.assets/image-20210720231948609.png)
+
+  由左图可以看出：动态申请`String`数组后，使用`delete[]`,能正确调用析构函数对内存进行释放；
+
+  由右图可以看出：动态申请`String`数组后，如何使用`delete`区释放内存，只会调用一次析构函数，剩下的2块动态申请的空间内存泄漏；
+
 * C++中new一个空间，使用delete []释放会怎么样？
+
+## 参考资料
+
+[glibc-2.2.3源码]([Index of /gnu/glibc](http://ftp.gnu.org/gnu/glibc/))
+
+侯捷CPP-面向对象高级编程课件
+
